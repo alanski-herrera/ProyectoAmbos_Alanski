@@ -120,11 +120,10 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // ===== Configuración del pipeline HTTP =====
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 // En producción (Render) no usar HTTPS redirect porque Render maneja SSL
 if (!app.Environment.IsProduction())
