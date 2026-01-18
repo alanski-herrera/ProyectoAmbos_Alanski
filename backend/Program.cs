@@ -21,8 +21,8 @@ if (connectionString != null)
         // Convertir formato Render/Heroku a formato Npgsql estándar
         var uri = new Uri(connectionString);
         var userInfo = uri.UserInfo.Split(new[] { ':' }, 2);
-        var port = uri.Port > 0 ? uri.Port : 5432;
-        connectionString = $"Host={uri.Host};Port={port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+        var dbPort = uri.Port > 0 ? uri.Port : 5432;
+        connectionString = $"Host={uri.Host};Port={dbPort};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
     }
     else if (connectionString.StartsWith("mysql://"))
     {
