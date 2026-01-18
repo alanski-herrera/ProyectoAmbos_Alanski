@@ -1,0 +1,88 @@
+<header class="header">
+  <div class="container">
+    <div class="header-content">
+      <!-- Logo -->
+      <div class="logo" (click)="router.navigate(['/'])" style="cursor: pointer;">
+        <h1>Ambos HN</h1>
+        <span class="subtitle">ShowWeb</span>
+      </div>
+
+      <!-- Ícono de uniforme médico -->
+      <div class="uniform-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.5">
+          <!-- Cuello en V -->
+          <path d="M8 3 L12 7 L16 3" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Cuerpo de la chaqueta -->
+          <path d="M6 6 L6 21 L18 21 L18 6" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Manga izquierda -->
+          <path d="M6 6 L3 9 L3 13 L6 11" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Manga derecha -->
+          <path d="M18 6 L21 9 L21 13 L18 11" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Bolsillo -->
+          <rect x="9" y="12" width="6" height="4" rx="0.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Detalle del bolsillo -->
+          <line x1="10" y1="14" x2="14" y2="14" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <!-- Sección de usuario/login -->
+      <div class="auth-section">
+        <div class="user-section" *ngIf="currentUser; else loginButton">
+          <button class="user-button" (click)="toggleUserMenu()">
+            <div class="user-avatar">
+              {{ currentUser.nombreAdmin.charAt(0) }}
+            </div>
+            <span class="user-name">{{ currentUser.nombreAdmin }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <div class="user-menu" *ngIf="showUserMenu">
+            <button (click)="goToAdmin()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              Panel Admin
+            </button>
+            <button (click)="logout()" class="logout-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Cerrar Sesión
+            </button>
+          </div>
+        </div>
+
+        <ng-template #loginButton>
+          <button class="btn-login" (click)="goToLogin()">
+            <div class="user-avatar">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                <polyline points="10 17 15 12 10 7"></polyline>
+                <line x1="15" y1="12" x2="3" y2="12"></line>
+              </svg>
+            </div>
+            <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay para cerrar el menú -->
+  <div class="menu-overlay" *ngIf="showUserMenu" (click)="toggleUserMenu()"></div>
+</header>

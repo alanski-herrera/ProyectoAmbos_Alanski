@@ -1,0 +1,56 @@
+<div class="home-page">
+  <app-header></app-header>
+
+  <main class="container">
+    <!-- Filtros y Ordenamiento -->
+    <div class="filtros-section">
+      <app-filtros (filtrosChanged)="onFiltrosChanged($event)"></app-filtros>
+
+      <div class="sort-section">
+        <label for="sort-select">Ordenar por:</label>
+        <select id="sort-select" [(ngModel)]="ordenSeleccionado" (change)="onOrdenChanged()">
+          <option value="recientes">Más recientes</option>
+          <option value="baratos">Más baratos</option>
+          <option value="caros">Más caros</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Productos -->
+    <div class="productos-section">
+      <div class="productos-header">
+        <h2>Productos Disponibles</h2>
+        <p class="productos-count">{{ uniformes.length }} productos encontrados</p>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-container" *ngIf="loading">
+        <div class="loading"></div>
+        <p>Cargando productos...</p>
+      </div>
+
+      <!-- Error -->
+      <div class="error-message" *ngIf="error && !loading">
+        <p>{{ error }}</p>
+        <button class="btn-primary" (click)="cargarUniformes()">Reintentar</button>
+      </div>
+
+      <!-- Grid de productos -->
+      <div class="productos-grid" *ngIf="!loading && !error">
+        <app-product-card *ngFor="let uniforme of uniformes" [uniforme]="uniforme">
+        </app-product-card>
+      </div>
+
+      <!-- Sin resultados -->
+      <div class="empty-state" *ngIf="!loading && !error && uniformes.length === 0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <h3>No se encontraron productos</h3>
+        <p>Intenta ajustar los filtros de búsqueda</p>
+      </div>
+    </div>
+  </main>
+</div>

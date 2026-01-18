@@ -1,0 +1,173 @@
+@import '../../../styles/variables';
+@import '../../../styles/mixins';
+
+.filtros-container {
+  position: relative;
+}
+
+.filtros-toggle {
+  @include button-primary;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+  position: relative;
+
+  @include respond-to(tablet) {
+    width: auto;
+  }
+
+  .badge {
+    background: $white;
+    color: $primary-blue;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+  }
+}
+
+.filtros-panel {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 85%;
+  max-width: 400px;
+  height: 100vh;
+  background: $white;
+  box-shadow: $shadow-lg;
+  z-index: 1000;
+  transition: right 0.3s ease;
+  display: flex;
+  flex-direction: column;
+
+  &.show {
+    right: 0;
+  }
+
+  @include respond-to(desktop) {
+    position: relative;
+    right: 0;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    box-shadow: none;
+    border: 1px solid $light-gray;
+    border-radius: $border-radius;
+  }
+}
+
+.filtros-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 1px solid $light-gray;
+
+  @include respond-to(desktop) {
+    display: none;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    color: $dark-text;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: $gray-text;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.filtros-content {
+  padding: $spacing-lg;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.filtro-group {
+  margin-bottom: $spacing-lg;
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: $spacing-sm;
+    color: $dark-text;
+    font-size: 14px;
+  }
+
+  select, input {
+    @include input-field;
+  }
+
+  .precio-inputs {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    input {
+      flex: 1;
+    }
+
+    span {
+      color: $gray-text;
+    }
+  }
+}
+
+.filtros-actions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-xl;
+
+  button {
+    flex: 1;
+    padding: 12px 24px;
+    border-radius: $border-radius-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    @include button-primary;
+  }
+
+  .btn-secondary {
+    background: $white;
+    color: $primary-blue;
+    border: 2px solid $primary-blue;
+
+    &:hover {
+      background: rgba($primary-blue, 0.05);
+    }
+  }
+}
+
+.filtros-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+
+  @include respond-to(desktop) {
+    display: none;
+  }
+}

@@ -1,0 +1,261 @@
+@import '../../../styles/variables';
+@import '../../../styles/mixins';
+
+.header {
+  background: $white;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: $spacing-md 0;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-md;
+  }
+
+  .logo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: $primary-blue;
+      margin: 0;
+
+      @include respond-to(tablet) {
+        font-size: 24px;
+      }
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: $gray-text;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+
+      @include respond-to(tablet) {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .uniform-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+
+    @include respond-to(tablet) {
+      width: 40px;
+      height: 40px;
+      background: rgba($primary-blue, 0.1);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba($primary-blue, 0.15);
+        transform: scale(1.05);
+      }
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+      color: $primary-blue;
+
+      @include respond-to(tablet) {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  .search-bar {
+    position: relative;
+    flex: 1;
+    max-width: 100%;
+    order: 3;
+
+    @include respond-to(tablet) {
+      max-width: 350px;
+      order: 2;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $gray-text;
+      pointer-events: none;
+    }
+
+    input {
+      @include input-field;
+      padding-left: 40px;
+      font-size: 14px;
+
+      @include respond-to(tablet) {
+        font-size: 15px;
+      }
+
+      &::placeholder {
+        color: $gray-text;
+      }
+    }
+  }
+
+  .auth-section {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .user-section {
+    position: relative;
+
+    .user-button {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      background: $light-gray;
+      border: none;
+      border-radius: 24px;
+      padding: 6px 12px 6px 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: darken($light-gray, 5%);
+      }
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: $primary-blue;
+        color: $white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .user-name {
+        font-weight: 600;
+        color: $dark-text;
+        font-size: 14px;
+        display: none;
+
+        @include respond-to(tablet) {
+          display: block;
+        }
+      }
+
+      svg {
+        color: $gray-text;
+      }
+    }
+
+    .user-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: $white;
+      border-radius: $border-radius;
+      box-shadow: $shadow-lg;
+      min-width: 200px;
+      overflow: hidden;
+      z-index: 1000;
+
+      button {
+        width: 100%;
+        padding: $spacing-md;
+        border: none;
+        background: none;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        font-size: 14px;
+        font-weight: 500;
+        color: $dark-text;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: $light-gray;
+        }
+
+        &.logout-btn {
+          color: #EF4444;
+          border-top: 1px solid $light-gray;
+
+          svg {
+            color: #EF4444;
+          }
+        }
+
+        svg {
+          color: $gray-text;
+        }
+      }
+    }
+  }
+
+  .btn-login {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    background: $light-gray;
+    border: none;
+    border-radius: 24px;
+    padding: 6px 12px 6px 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: darken($light-gray, 5%);
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: $primary-blue;
+      color: $white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .dropdown-icon {
+      color: $gray-text;
+      flex-shrink: 0;
+    }
+  }
+
+  .menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+    z-index: 999;
+  }
+}

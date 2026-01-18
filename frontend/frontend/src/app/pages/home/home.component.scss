@@ -1,0 +1,156 @@
+@import '../../../styles/variables';
+@import '../../../styles/mixins';
+
+.home-page {
+  min-height: 100vh;
+  background: $background;
+}
+
+main {
+  padding: $spacing-lg 0;
+}
+
+.filtros-section {
+  margin-bottom: $spacing-xl;
+  display: flex;
+  flex-direction: row;
+  gap: $spacing-sm;
+  align-items: stretch;
+
+  @include respond-to(tablet) {
+    gap: $spacing-md;
+  }
+
+  app-filtros {
+    flex: 1;
+  }
+
+  .sort-section {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    background: $white;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius;
+    box-shadow: $shadow-sm;
+    flex-shrink: 0;
+
+    @include respond-to(tablet) {
+      padding: $spacing-md;
+      gap: $spacing-sm;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: $dark-text;
+      white-space: nowrap;
+      display: none;
+
+      @include respond-to(tablet) {
+        display: block;
+        font-size: 14px;
+      }
+    }
+
+    select {
+      @include input-field;
+      padding: 8px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      min-width: 120px;
+
+      @include respond-to(tablet) {
+        font-size: 14px;
+        min-width: 150px;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $primary-blue;
+      }
+    }
+  }
+}
+
+.productos-section {
+  .productos-header {
+    margin-bottom: $spacing-lg;
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: $dark-text;
+      margin: 0 0 $spacing-xs 0;
+    }
+
+    .productos-count {
+      font-size: 14px;
+      color: $gray-text;
+      margin: 0;
+    }
+  }
+
+  .productos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+
+    @include respond-to(tablet) {
+      grid-template-columns: repeat(3, 1fr);
+      gap: $spacing-lg;
+    }
+
+    @include respond-to(desktop) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-xl * 2;
+    gap: $spacing-md;
+
+    p {
+      color: $gray-text;
+    }
+  }
+
+  .error-message {
+    text-align: center;
+    padding: $spacing-xl * 2;
+
+    p {
+      color: $gray-text;
+      margin-bottom: $spacing-lg;
+    }
+
+    button {
+      @include button-primary;
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: $spacing-xl * 3;
+
+    svg {
+      color: $light-gray;
+      margin: 0 auto $spacing-lg;
+    }
+
+    h3 {
+      font-size: 20px;
+      color: $dark-text;
+      margin: 0 0 $spacing-sm 0;
+    }
+
+    p {
+      color: $gray-text;
+      margin: 0;
+    }
+  }
+}

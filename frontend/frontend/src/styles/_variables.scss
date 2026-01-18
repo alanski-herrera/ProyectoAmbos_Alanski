@@ -1,0 +1,30 @@
+$primary-blue: #4A90E2;
+$primary-blue-light: #5B9FED;
+$primary-blue-dark: #3A7BC8;
+$secondary-blue: #87CEEB;
+
+$dark-text: #2C3E50;
+$gray-text: #7F8C8D;
+$light-gray: #ECF0F1;
+$white: #FFFFFF;
+$background: #F8F9FA;
+
+$border-radius: 12px;
+$border-radius-sm: 8px;
+$border-radius-lg: 16px;
+
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Responsive breakpoints
+$mobile: 320px;
+$tablet: 768px;
+$desktop: 1024px;
+$desktop-lg: 1440px;

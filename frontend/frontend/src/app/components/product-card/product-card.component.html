@@ -1,0 +1,17 @@
+<div class="product-card" (click)="verDetalle()">
+  <div class="product-image">
+    <img [src]="imagenPrincipal" [alt]="uniforme.marca + ' ' + uniforme.tipoPrenda" />
+    <div class="product-badge">{{ uniforme.estado }}</div>
+  </div>
+  
+  <div class="product-info">
+    <p class="product-type">{{ uniforme.tipoPrenda }}</p>
+    <h3 class="product-name">{{ uniforme.marca }}</h3>
+    <div class="product-details">
+      <span class="talle">Talle: {{ uniforme.talle }}</span>
+    </div>
+    <div class="product-footer">
+      <span class="price">${{ uniforme.precio | number:'1.0-0' }}</span>
+    </div>
+  </div>
+</div>

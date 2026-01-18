@@ -1,0 +1,490 @@
+<div class="admin-page">
+  <!-- Header -->
+  <div class="admin-header">
+    <div class="container">
+      <div class="header-content">
+        <div class="header-left">
+          <button class="btn-back" (click)="volverInicio()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <div>
+            <h1>Panel de Administrador</h1>
+            <p>Gestión de Inventario y Reservas</p>
+          </div>
+        </div>
+
+        <!-- Removed Tabs Actions, now using Cards -->
+      </div>
+    </div>
+  </div>
+
+  <div class="container admin-content">
+
+    <!-- Header Actions moved here or floating? 
+         User wanted "saca los botones chicos que pusiste arriba".
+         We still need "Agregar Uniforme". Let's put it in a Floating Action Button or header right.
+    -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px;">
+      <button class="btn-secondary" (click)="abrirConfigModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
+        Config. Envío
+      </button>
+      <button class="btn-primary" (click)="abrirModalCrear()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Agregar Uniforme
+      </button>
+    </div>
+
+    <!-- Estadísticas / Navegación (Siempre visibles arriba) -->
+    <div class="stats-grid">
+      <div class="stat-card clickable" (click)="viewMode = 'inventario'; filtroEstado = ''; cargarDatos()"
+        [class.active]="viewMode === 'inventario' && !filtroEstado">
+        <div class="stat-icon total">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p>Total</p>
+          <h3>{{ estadisticas.total }}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card clickable" (click)="viewMode = 'inventario'; filtroEstado = 'Disponible'; cargarDatos()"
+        [class.active]="viewMode === 'inventario' && filtroEstado === 'Disponible'">
+        <div class="stat-icon disponible">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p>Disponibles</p>
+          <h3>{{ estadisticas.disponibles }}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card clickable" (click)="viewMode = 'reservas'; cargarReservas()"
+        [class.active]="viewMode === 'reservas'">
+        <div class="stat-icon reservado">
+          <span class="notification-badge" *ngIf="estadisticas.reservados > 0">{{ estadisticas.reservados }}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p>Reservados</p>
+          <h3>{{ estadisticas.reservados }}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card clickable" (click)="viewMode = 'inventario'; filtroEstado = 'Vendido'; cargarDatos()"
+        [class.active]="viewMode === 'inventario' && filtroEstado === 'Vendido'">
+        <div class="stat-icon vendido">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path
+              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+            </path>
+            <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
+            <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
+            <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p>Vendidos</p>
+          <h3>{{ estadisticas.vendidos }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Mode: INVENTARIO -->
+    <ng-container *ngIf="viewMode === 'inventario'">
+
+      <!-- Búsqueda por ID -->
+      <div class="filters-section">
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" placeholder="Buscar por ID del uniforme..." [(ngModel)]="searchId" />
+        </div>
+
+        <select [(ngModel)]="filtroEstado" (change)="cargarDatos()" class="filter-select">
+          <option value="">Todos los estados</option>
+          <option value="Disponible">Disponible</option>
+          <option value="Reservado">Reservado</option>
+          <option value="Vendido">Vendido</option>
+        </select>
+      </div>
+
+      <!-- Tabla de uniformes -->
+      <div class="table-container">
+        <div class="loading-container" *ngIf="loading">
+          <div class="loading"></div>
+          <p>Cargando inventario...</p>
+        </div>
+
+        <table class="uniformes-table" *ngIf="!loading">
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Marca</th>
+              <th>Tipo</th>
+              <th>Talle</th>
+              <th>Precio</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let uniforme of uniformesFiltrados">
+              <td>
+                <img [src]="uniforme.imagen1 || 'assets/images/placeholder.png'" alt="{{ uniforme.marca }}"
+                  class="table-image" />
+              </td>
+              <td><strong>{{ uniforme.marca }}</strong></td>
+              <td>{{ uniforme.tipoPrenda }}</td>
+              <td><span class="badge-talle">{{ uniforme.talle }}</span></td>
+              <td><strong class="price">${{ uniforme.precio | number:'1.0-0' }}</strong></td>
+              <td>
+                <div class="status-select-container">
+                  <select [ngModel]="uniforme.estado" (ngModelChange)="cambiarEstado(uniforme, $event)"
+                    class="badge-estado-select"
+                    [ngClass]="'estado-' + (uniforme.estado ? uniforme.estado.toLowerCase() : 'disponible')">
+                    <option value="Disponible">Disponible</option>
+                    <option value="Reservado">Reservado</option>
+                    <option value="Vendido">Vendido</option>
+                  </select>
+                </div>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="abrirModalEditar(uniforme)" title="Editar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </button>
+                  <button class="btn-icon danger" (click)="confirmarEliminacion(uniforme)" title="Eliminar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="empty-state" *ngIf="!loading && uniformesFiltrados.length === 0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <h3>No se encontraron uniformes</h3>
+          <p>Intenta ajustar los filtros o agrega nuevos productos</p>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <!-- View Mode: RESERVAS -->
+    <ng-container *ngIf="viewMode === 'reservas'">
+      <div class="reservas-header">
+        <h2>Reservas Activas</h2>
+        <div class="kanban-stats">
+          <div class="k-stat">
+            <span class="label">Total</span>
+            <span class="value">{{ reservas.length }}</span>
+          </div>
+          <button class="btn-sync" (click)="sincronizarReservas()" title="Recuperar reservas del sistema anterior">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M21 2v6h-6"></path>
+              <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+              <path d="M3 22v-6h6"></path>
+              <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+            </svg>
+            Sincronizar Datos
+          </button>
+        </div>
+      </div>
+
+      <!-- Búsqueda por ID de Uniforme en Reservas -->
+      <div class="filters-section" style="margin-bottom: 20px;">
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" placeholder="Buscar por ID del uniforme..." [(ngModel)]="searchReservaId" />
+        </div>
+      </div>
+
+      <div class="reservas-list">
+        <div class="reserva-card" *ngFor="let reserva of reservasFiltradas">
+          <div class="reserva-main-info">
+            <div class="info-group">
+              <label>ID Reserva</label>
+              <span>#{{ reserva.idReserva }}</span>
+            </div>
+            <div class="info-group">
+              <label>Fecha</label>
+              <span>{{ reserva.fechaReserva | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-group">
+              <label>Cliente</label>
+              <div class="cliente-info">
+                <strong>{{ reserva.cliente.nombreCliente }}</strong>
+                <small>{{ reserva.cliente.telefono }}</small>
+                <div class="address" *ngIf="reserva.cliente.direccion">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  {{ reserva.cliente.direccion }}
+                </div>
+              </div>
+            </div>
+            <div class="info-group product-info">
+              <img [src]="reserva.uniforme.imagen1 || 'assets/images/placeholder.png'" class="thumb">
+              <div>
+                <strong>{{ reserva.uniforme.marca }}</strong>
+                <span>Talle {{ reserva.uniforme.talle }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="reserva-actions">
+            <button class="btn-outline-danger" (click)="cancelarReserva(reserva)">
+              DESCARTAR RESERVA
+            </button>
+            <button class="btn-primary-dark" (click)="confirmarVentaReserva(reserva)">
+              CONFIRMAR VENTA
+            </button>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="reservas.length === 0">
+          <p>No hay reservas activas en este momento.</p>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<!-- Modal de crear/editar -->
+<div class="modal-overlay" *ngIf="showModal" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ modoEdicion ? 'Editar Uniforme' : 'Nuevo Uniforme' }}</h2>
+      <button class="btn-close" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <form (ngSubmit)="guardarUniforme()" class="modal-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Marca *</label>
+          <select [(ngModel)]="uniformeActual.idMarca" name="marca" required>
+            <option [ngValue]="undefined">Seleccionar marca</option>
+            <option *ngFor="let marca of marcas" [value]="marca.idMarca">{{ marca.nombreMarca }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de Prenda *</label>
+          <select [(ngModel)]="uniformeActual.idTipoPrenda" name="tipo" required>
+            <option [ngValue]="undefined">Seleccionar tipo</option>
+            <option *ngFor="let tipo of tiposPrenda" [value]="tipo.idTipoPrenda">{{ tipo.nombreTipo }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Talle *</label>
+          <select [(ngModel)]="uniformeActual.talle" name="talle" required>
+            <option value="">Seleccionar talle</option>
+            <option value="XS">XS</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Precio *</label>
+          <input type="number" [(ngModel)]="uniformeActual.precio" name="precio" placeholder="0" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea [(ngModel)]="uniformeActual.descripcion" name="descripcion" rows="3"
+          placeholder="Descripción del producto..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Imagen 1</label>
+        <div class="image-upload-container">
+          <input type="file" id="file-imagen1" accept="image/*" (change)="onFileSelected($event, 'imagen1')"
+            class="file-input" />
+          <label for="file-imagen1" class="file-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Seleccionar desde dispositivo
+          </label>
+          <div class="image-preview" *ngIf="uniformeActual.imagen1">
+            <img [src]="uniformeActual.imagen1" alt="Vista previa" />
+            <button type="button" class="btn-remove-image" (click)="eliminarImagen('imagen1')" title="Eliminar">
+              ✕
+            </button>
+          </div>
+          <div class="or-divider">O</div>
+          <input type="text" [(ngModel)]="uniformeActual.imagen1" (ngModelChange)="onUrlChange('imagen1')"
+            name="imagen1" placeholder="Pegar URL de imagen..." class="url-input" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Imagen 2</label>
+        <div class="image-upload-container">
+          <input type="file" id="file-imagen2" accept="image/*" (change)="onFileSelected($event, 'imagen2')"
+            class="file-input" />
+          <label for="file-imagen2" class="file-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Seleccionar desde dispositivo
+          </label>
+          <div class="image-preview" *ngIf="uniformeActual.imagen2">
+            <img [src]="uniformeActual.imagen2" alt="Vista previa" />
+            <button type="button" class="btn-remove-image" (click)="eliminarImagen('imagen2')" title="Eliminar">
+              ✕
+            </button>
+          </div>
+          <div class="or-divider">O</div>
+          <input type="text" [(ngModel)]="uniformeActual.imagen2" (ngModelChange)="onUrlChange('imagen2')"
+            name="imagen2" placeholder="Pegar URL de imagen..." class="url-input" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Imagen 3</label>
+        <div class="image-upload-container">
+          <input type="file" id="file-imagen3" accept="image/*" (change)="onFileSelected($event, 'imagen3')"
+            class="file-input" />
+          <label for="file-imagen3" class="file-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Seleccionar desde dispositivo
+          </label>
+          <div class="image-preview" *ngIf="uniformeActual.imagen3">
+            <img [src]="uniformeActual.imagen3" alt="Vista previa" />
+            <button type="button" class="btn-remove-image" (click)="eliminarImagen('imagen3')" title="Eliminar">
+              ✕
+            </button>
+          </div>
+          <div class="or-divider">O</div>
+          <input type="text" [(ngModel)]="uniformeActual.imagen3" (ngModelChange)="onUrlChange('imagen3')"
+            name="imagen3" placeholder="Pegar URL de imagen..." class="url-input" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn-primary">{{ modoEdicion ? 'Actualizar' : 'Crear' }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal-overlay" *ngIf="confirmarEliminar">
+  <div class="modal-content modal-small">
+    <div class="modal-header">
+      <h2>Confirmar Eliminación</h2>
+    </div>
+
+    <div class="modal-body">
+      <p>¿Estás seguro que deseas eliminar este uniforme?</p>
+      <p class="text-danger"><strong>{{ uniformeAEliminar?.marca }} - {{ uniformeAEliminar?.talle }}</strong></p>
+      <p class="text-muted">Esta acción no se puede deshacer.</p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cancelarEliminacion()">Cancelar</button>
+      <button class="btn-danger" (click)="eliminarUniforme()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de configuración de envío -->
+<div class="modal-overlay" *ngIf="showConfigModal" (click)="cerrarModal()">
+  <div class="modal-content modal-small" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Configurar Envío</h2>
+      <button class="btn-close" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <div class="modal-body" style="text-align: left;">
+      <p>Establece el costo de envío general para todos los pedidos.</p>
+
+      <div class="form-group" style="margin-top: 20px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 8px;">Costo de Envío ($)</label>
+        <input type="number" [(ngModel)]="costoEnvio" min="0"
+          style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;" />
+        <small style="display: block; margin-top: 5px; color: #666;">Ingresa 0 para envío GRATIS.</small>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" (click)="guardarConfiguracion()">Guardar cambios</button>
+    </div>
+  </div>
+</div>

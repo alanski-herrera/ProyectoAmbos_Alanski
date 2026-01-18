@@ -1,0 +1,15 @@
+# Visual Studio
+.vs/
+
+# Node
+node_modules/
+
+# Angular
+dist/
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+.DS_Store
