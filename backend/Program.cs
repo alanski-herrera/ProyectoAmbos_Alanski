@@ -13,7 +13,25 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-var usePostgres = connectionString?.Contains("postgres") ?? false;
+// Convertir formato URL a formato estándar si es necesario
+if (connectionString != null)
+{
+    if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
+    {
+        // Convertir formato Render/Heroku a formato Npgsql estándar
+        var uri = new Uri(connectionString);
+        var userInfo = uri.UserInfo.Split(':');
+        connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    }
+    else if (connectionString.StartsWith("mysql://"))
+    {
+        // Convertir formato Railway MySQL a formato estándar
+        var uri = new Uri(connectionString);
+        connectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};User={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};";
+    }
+}
+
+var usePostgres = connectionString?.Contains("Host=") ?? false;
 
 if (usePostgres)
 {
@@ -33,13 +51,6 @@ if (usePostgres)
 else
 {
     // MySQL para desarrollo local
-    // Convertir formato Railway (mysql://user:pass@host:port/db) a formato MySQL estándar
-    if (connectionString != null && connectionString.StartsWith("mysql://"))
-    {
-        var uri = new Uri(connectionString);
-        connectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};User={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};";
-    }
-
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseMySql(
             connectionString,
@@ -109,8 +120,11 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // ===== Configuración del pipeline HTTP =====
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // En producción (Render) no usar HTTPS redirect porque Render maneja SSL
 if (!app.Environment.IsProduction())
@@ -135,18 +149,5 @@ var url = $"http://0.0.0.0:{port}";
 Console.WriteLine("🚀 API de AMBOS iniciada correctamente");
 Console.WriteLine($"📦 Base de datos conectada");
 Console.WriteLine($"🌐 Escuchando en: {url}");
-
-app.MapGet("/", () => Results.Ok(new
-{
-    status = "OK",
-    message = "API de AMBOS está funcionando",
-    timestamp = DateTime.UtcNow
-}));
-
-app.MapGet("/health", () => Results.Ok(new
-{
-    status = "healthy",
-    database = "connected"
-}));
 
 app.Run(url);
