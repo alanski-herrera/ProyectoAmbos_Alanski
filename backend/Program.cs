@@ -139,4 +139,17 @@ Console.WriteLine("🚀 API de AMBOS iniciada correctamente");
 Console.WriteLine($"📦 Base de datos conectada");
 Console.WriteLine($"🌐 Escuchando en: {url}");
 
+app.MapGet("/", () => Results.Ok(new
+{
+    status = "OK",
+    message = "API de AMBOS está funcionando",
+    timestamp = DateTime.UtcNow
+}));
+
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    database = "connected"
+}));
+
 app.Run(url);
