@@ -10,28 +10,49 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // ===== Configuración de la Base de Datos =====
-// Priorizar variable de entorno de Railway, sino usar appsettings.json
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Convertir formato Railway (mysql://user:pass@host:port/db) a formato MySQL estándar
-if (connectionString != null && connectionString.StartsWith("mysql://"))
-{
-    var uri = new Uri(connectionString);
-    connectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};User={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};";
-}
+var usePostgres = connectionString?.Contains("postgres") ?? false;
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        connectionString,
-        ServerVersion.AutoDetect(connectionString),
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(10),
-            errorNumbersToAdd: null
+if (usePostgres)
+{
+    // PostgreSQL para producción (Render)
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(
+            connectionString,
+            npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorCodesToAdd: null
+            )
         )
-    )
-);
+    );
+    Console.WriteLine("🔵 Usando PostgreSQL");
+}
+else
+{
+    // MySQL para desarrollo local
+    // Convertir formato Railway (mysql://user:pass@host:port/db) a formato MySQL estándar
+    if (connectionString != null && connectionString.StartsWith("mysql://"))
+    {
+        var uri = new Uri(connectionString);
+        connectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};User={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};";
+    }
+
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseMySql(
+            connectionString,
+            ServerVersion.AutoDetect(connectionString),
+            mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null
+            )
+        )
+    );
+    Console.WriteLine("🟢 Usando MySQL");
+}
 
 // ===== Configuración de JWT =====
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
@@ -61,7 +82,6 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // ===== Configuración de CORS =====
-// Obtener orígenes permitidos de variable de entorno o configuración
 var allowedOriginsString = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")
     ?? builder.Configuration["AllowedOrigins"]
     ?? "http://localhost:4200";
@@ -95,7 +115,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// En producción (Railway) no usar HTTPS redirect porque Railway maneja SSL
+// En producción (Render) no usar HTTPS redirect porque Render maneja SSL
 if (!app.Environment.IsProduction())
 {
     app.UseHttpsRedirection();
@@ -111,7 +131,7 @@ app.UseStaticFiles();
 
 app.MapControllers();
 
-// ===== Configurar puerto dinámico para Railway =====
+// ===== Configurar puerto dinámico =====
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 var url = $"http://0.0.0.0:{port}";
 
