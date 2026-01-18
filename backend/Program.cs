@@ -139,7 +139,25 @@ app.UseAuthorization();
 
 app.UseStaticFiles();
 
+app.MapGet("/", () => new { message = "API de AMBOS funcionando correctamente 🚀", environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development" });
+
 app.MapControllers();
+
+// ===== Aplicar migraciones pendientes (para Render) =====
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate(); // Aplica las migraciones pendientes automáticamente
+        Console.WriteLine("✅ Migraciones de base de datos aplicadas correctamente");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Error al aplicar migraciones: {ex.Message}");
+    }
+}
 
 // ===== Configurar puerto dinámico =====
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
