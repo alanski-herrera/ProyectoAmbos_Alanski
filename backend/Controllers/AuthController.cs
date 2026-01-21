@@ -15,6 +15,30 @@ namespace ProyectoAmbos_Alanski.Controllers
             _authService = authService;
         }
 
+        // POST: api/Auth/register
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterDto registerDto)
+        {
+            var result = await _authService.Register(registerDto);
+
+            if (result == null)
+            {
+                return BadRequest(new { message = "El email o DNI ya están registrados" });
+            }
+
+            return Ok(new
+            {
+                message = "Administrador registrado exitosamente",
+                admin = new
+                {
+                    result.IdAdmin,
+                    result.NombreAdmin,
+                    result.Email,
+                    result.FechaCreacion
+                }
+            });
+        }
+
         // POST: api/Auth/login
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseDto>> Login(LoginDto loginDto)

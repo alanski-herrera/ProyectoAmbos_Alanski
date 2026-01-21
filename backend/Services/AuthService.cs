@@ -101,5 +101,45 @@ namespace ProyectoAmbos_Alanski.Services
             // En producción usa BCrypt.Net
             return password == hashedPassword;
         }
+
+        public async Task<Administrador?> Register(RegisterDto registerDto)
+        {
+            // Verificar si el email ya existe
+            var existingAdmin = await _context.Administradores
+                .FirstOrDefaultAsync(a => a.Email == registerDto.Email);
+
+            if (existingAdmin != null)
+            {
+                return null; // Email ya registrado
+            }
+
+            // Verificar si el DNI ya existe
+            var existingDni = await _context.Administradores
+                .FirstOrDefaultAsync(a => a.Dni == registerDto.Dni);
+
+            if (existingDni != null)
+            {
+                return null; // DNI ya registrado
+            }
+
+            // Hashear la contraseña
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerDto.Contrasena);
+
+            // Crear nuevo administrador
+            var nuevoAdmin = new Administrador
+            {
+                NombreAdmin = registerDto.NombreAdmin,
+                Dni = registerDto.Dni,
+                Email = registerDto.Email,
+                Contrasena = hashedPassword,
+                FechaCreacion = DateTime.UtcNow,
+                Activo = true
+            };
+
+            _context.Administradores.Add(nuevoAdmin);
+            await _context.SaveChangesAsync();
+
+            return nuevoAdmin;
+        }
     }
 }
