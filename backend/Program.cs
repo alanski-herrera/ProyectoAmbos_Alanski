@@ -36,6 +36,9 @@ var usePostgres = connectionString?.Contains("Host=") ?? false;
 
 if (usePostgres)
 {
+
+    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+   
     // PostgreSQL para producción (Render)
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(

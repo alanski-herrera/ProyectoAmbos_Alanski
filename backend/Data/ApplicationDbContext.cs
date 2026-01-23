@@ -174,6 +174,10 @@ namespace ProyectoAmbos_Alanski.Data
                     .HasForeignKey<Envio>(e => e.IdVenta)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         }
+
     }
 }
