@@ -30,14 +30,14 @@ namespace ProyectoAmbos_Alanski.Services
                 return null;
             }
 
-            // Verificar contraseña
-            if (admin.Contrasena != loginDto.Contrasena)
+            // ✅ VERIFICAR CONTRASEÑA CON BCRYPT
+            if (!BCrypt.Net.BCrypt.Verify(loginDto.Contrasena, admin.Contrasena))
             {
                 return null;
             }
 
             // Actualizar último acceso
-            admin.UltimoAcceso = DateTime.Now;
+            admin.UltimoAcceso = DateTime.UtcNow; // ← Cambiar a UTC
 
             try
             {
@@ -81,7 +81,7 @@ namespace ProyectoAmbos_Alanski.Services
                 issuer: jwtIssuer,
                 audience: jwtAudience,
                 claims: claims,
-                expires: DateTime.Now.AddHours(8),
+                expires: DateTime.UtcNow.AddHours(8),
                 signingCredentials: credentials
             );
 
