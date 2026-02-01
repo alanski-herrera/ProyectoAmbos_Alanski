@@ -13,61 +13,28 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Convertir formato URL a formato estándar si es necesario
-if (connectionString != null)
+// Convertir formato Railway MySQL (mysql://user:pass@host:port/db) a formato estándar
+if (connectionString != null && connectionString.StartsWith("mysql://"))
 {
-    if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
-    {
-        // Convertir formato Render/Heroku a formato Npgsql estándar
-        var uri = new Uri(connectionString);
-        var userInfo = uri.UserInfo.Split(new[] { ':' }, 2);
-        var dbPort = uri.Port > 0 ? uri.Port : 5432;
-        connectionString = $"Host={uri.Host};Port={dbPort};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
-    }
-    else if (connectionString.StartsWith("mysql://"))
-    {
-        // Convertir formato Railway MySQL a formato estándar
-        var uri = new Uri(connectionString);
-        connectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};User={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};";
-    }
+    var uri = new Uri(connectionString);
+    var userInfo = uri.UserInfo.Split(':');
+    connectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};User={userInfo[0]};Password={userInfo[1]};";
 }
 
-var usePostgres = connectionString?.Contains("Host=") ?? false;
-
-if (usePostgres)
-{
-
-    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-   
-    // PostgreSQL para producción (Render)
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(
-            connectionString,
-            npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(10),
-                errorCodesToAdd: null
-            )
+// Usar MySQL (Railway)
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(
+        connectionString,
+        ServerVersion.AutoDetect(connectionString),
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null
         )
-    );
-    Console.WriteLine("🔵 Usando PostgreSQL");
-}
-else
-{
-    // MySQL para desarrollo local
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseMySql(
-            connectionString,
-            ServerVersion.AutoDetect(connectionString),
-            mySqlOptions => mySqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(10),
-                errorNumbersToAdd: null
-            )
-        )
-    );
-    Console.WriteLine("🟢 Usando MySQL");
-}
+    )
+);
+
+Console.WriteLine("🟢 Usando MySQL en Railway");
 
 // ===== Configuración de JWT =====
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
@@ -124,12 +91,11 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // ===== Configuración del pipeline HTTP =====
-
+// Swagger siempre disponible para facilitar testing
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
-// En producción (Render) no usar HTTPS redirect porque Render maneja SSL
+// Railway maneja SSL, no usar HTTPS redirect en producción
 if (!app.Environment.IsProduction())
 {
     app.UseHttpsRedirection();
@@ -143,18 +109,24 @@ app.UseAuthorization();
 
 app.UseStaticFiles();
 
-app.MapGet("/", () => new { message = "API de AMBOS funcionando correctamente 🚀", environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development" });
+// Endpoint raíz para verificar que la API funciona
+app.MapGet("/", () => new
+{
+    message = "API de AMBOS funcionando correctamente 🚀",
+    environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development",
+    database = "MySQL (Railway)"
+});
 
 app.MapControllers();
 
-// ===== Aplicar migraciones pendientes (para Render) =====
+// ===== Aplicar migraciones automáticamente al iniciar =====
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate(); // Aplica las migraciones pendientes automáticamente
+        context.Database.Migrate(); // Aplica migraciones pendientes
         Console.WriteLine("✅ Migraciones de base de datos aplicadas correctamente");
     }
     catch (Exception ex)
@@ -163,12 +135,12 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// ===== Configurar puerto dinámico =====
+// ===== Configurar puerto dinámico para Railway =====
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 var url = $"http://0.0.0.0:{port}";
 
 Console.WriteLine("🚀 API de AMBOS iniciada correctamente");
-Console.WriteLine($"📦 Base de datos conectada");
+Console.WriteLine($"📦 Base de datos: MySQL conectada");
 Console.WriteLine($"🌐 Escuchando en: {url}");
 
 app.Run(url);
