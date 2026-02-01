@@ -82,11 +82,12 @@
   .header-nav {
     position: absolute;
     right: 0;
-    display: flex;
+    display: none; // Hidden on mobile
     align-items: center;
     gap: $spacing-sm;
 
     @include respond-to(desktop) {
+      display: flex; // Show on desktop
       gap: $spacing-md;
     }
 
@@ -217,7 +218,7 @@
 
   // Segunda fila: Filtros y ubicación
   .header-bottom {
-    display: flex;
+    display: flex; // Show on mobile for filters
     align-items: center;
     justify-content: space-between;
     padding: $spacing-md 0;
