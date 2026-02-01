@@ -50,14 +50,7 @@
   }
 
   @include respond-to(desktop) {
-    position: relative;
-    right: 0;
-    width: 100%;
-    max-width: none;
-    height: auto;
-    box-shadow: none;
-    border: 1px solid $light-gray;
-    border-radius: $border-radius;
+    max-width: 450px;
   }
 }
 
@@ -67,10 +60,6 @@
   align-items: center;
   padding: $spacing-lg;
   border-bottom: 1px solid $light-gray;
-
-  @include respond-to(desktop) {
-    display: none;
-  }
 
   h3 {
     margin: 0;
@@ -90,6 +79,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $dark-text;
+    }
   }
 }
 
@@ -110,7 +104,8 @@
     font-size: 14px;
   }
 
-  select, input {
+  select,
+  input {
     @include input-field;
   }
 
@@ -166,8 +161,15 @@
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
 
-  @include respond-to(desktop) {
-    display: none;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }

@@ -10,66 +10,107 @@ main {
   padding: $spacing-lg 0;
 }
 
-.filtros-section {
-  margin-bottom: $spacing-xl;
+// Estilos para los filtros que se proyectan en el header
+.filters-content {
   display: flex;
-  flex-direction: row;
+  align-items: center;
   gap: $spacing-sm;
-  align-items: stretch;
 
-  @include respond-to(tablet) {
+  @include respond-to(desktop) {
     gap: $spacing-md;
   }
 
   app-filtros {
-    flex: 1;
+    flex-shrink: 0;
   }
 
-  .sort-section {
+  .sort-button-wrapper {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .sort-button {
+    @include button-primary;
     display: flex;
     align-items: center;
-    gap: $spacing-xs;
+    gap: 8px;
+    justify-content: center;
+    min-width: 120px;
+
+    @include respond-to(desktop) {
+      min-width: 150px;
+    }
+
+    .chevron {
+      margin-left: auto;
+    }
+  }
+
+  .sort-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
     background: $white;
-    padding: $spacing-sm $spacing-md;
     border-radius: $border-radius;
-    box-shadow: $shadow-sm;
-    flex-shrink: 0;
+    box-shadow: $shadow-lg;
+    overflow: hidden;
+    z-index: 1000;
+    animation: slideDown 0.2s ease;
 
     @include respond-to(tablet) {
+      left: auto;
+      min-width: 200px;
+    }
+
+    button {
+      width: 100%;
       padding: $spacing-md;
-      gap: $spacing-sm;
-    }
-
-    label {
-      font-size: 13px;
-      font-weight: 600;
-      color: $dark-text;
-      white-space: nowrap;
-      display: none;
-
-      @include respond-to(tablet) {
-        display: block;
-        font-size: 14px;
-      }
-    }
-
-    select {
-      @include input-field;
-      padding: 8px 12px;
-      font-size: 13px;
+      border: none;
+      background: none;
+      text-align: left;
       cursor: pointer;
-      min-width: 120px;
+      font-size: 14px;
+      font-weight: 500;
+      color: $dark-text;
+      transition: background 0.2s ease;
 
-      @include respond-to(tablet) {
-        font-size: 14px;
-        min-width: 150px;
+      &:hover {
+        background: $light-gray;
       }
 
-      &:focus {
-        outline: none;
-        border-color: $primary-blue;
+      &.active {
+        background: rgba($primary-blue, 0.1);
+        color: $primary-blue;
+        font-weight: 600;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid $light-gray;
       }
     }
+  }
+
+  .sort-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: transparent;
+    z-index: 999;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

@@ -1,20 +1,41 @@
 <div class="home-page">
-  <app-header></app-header>
-
-  <main class="container">
-    <!-- Filtros y Ordenamiento -->
-    <div class="filtros-section">
+  <app-header>
+    <div filters class="filters-content">
       <app-filtros (filtrosChanged)="onFiltrosChanged($event)"></app-filtros>
 
-      <div class="sort-section">
-        <label for="sort-select">Ordenar por:</label>
-        <select id="sort-select" [(ngModel)]="ordenSeleccionado" (change)="onOrdenChanged()">
-          <option value="recientes">Más recientes</option>
-          <option value="baratos">Más baratos</option>
-          <option value="caros">Más caros</option>
-        </select>
+      <div class="sort-button-wrapper">
+        <button class="sort-button" (click)="toggleSortMenu()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <line x1="4" y1="6" x2="16" y2="6"></line>
+            <line x1="4" y1="12" x2="13" y2="12"></line>
+            <line x1="4" y1="18" x2="10" y2="18"></line>
+          </svg>
+          Ordenar
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <div class="sort-menu" *ngIf="showSortMenu">
+          <button (click)="selectSort('recientes')" [class.active]="ordenSeleccionado === 'recientes'">
+            Más recientes
+          </button>
+          <button (click)="selectSort('baratos')" [class.active]="ordenSeleccionado === 'baratos'">
+            Más baratos
+          </button>
+          <button (click)="selectSort('caros')" [class.active]="ordenSeleccionado === 'caros'">
+            Más caros
+          </button>
+        </div>
       </div>
+
+      <div class="sort-overlay" *ngIf="showSortMenu" (click)="toggleSortMenu()"></div>
     </div>
+  </app-header>
+
+  <main class="container">
 
     <!-- Productos -->
     <div class="productos-section">

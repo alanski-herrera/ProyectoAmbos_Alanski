@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   loading = true;
   error: string | null = null;
   ordenSeleccionado: string = 'recientes';
+  showSortMenu = false;
 
   constructor(private apiService: ApiService) { }
 
@@ -71,5 +72,15 @@ export class HomeComponent implements OnInit {
     }
 
     this.uniformes = uniformesOrdenados;
+  }
+
+  toggleSortMenu() {
+    this.showSortMenu = !this.showSortMenu;
+  }
+
+  selectSort(orden: string) {
+    this.ordenSeleccionado = orden;
+    this.aplicarOrdenamiento();
+    this.showSortMenu = false;
   }
 }
