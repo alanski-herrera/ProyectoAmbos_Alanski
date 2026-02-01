@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://proyectoambos-alanski.onrender.com/api'  // <-- Agregá /api al final
+  apiUrl: 'https://tu-backend.up.railway.app'  // URL que obtendrás de Railway
 };
