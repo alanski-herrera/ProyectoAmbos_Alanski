@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "dotnet run --urls=http://0.0.0.0:$PORT",
+    "startCommand": "dotnet ProyectoAmbos_Alanski.dll",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5
   }
